@@ -20,6 +20,8 @@ Edit the RestGenerator.properties to set connection info, databasename, and pack
 
 Edit the template file to change the resulting generated files
 
+In your MySQL instance, be sure the schema you specified as the databasename is loaded.
+
 ###3 Build
 
 ```
