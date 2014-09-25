@@ -1,0 +1,46 @@
+
+import {{ interfacePackage}};
+
+import spark.Request;
+import spark.Response;
+import spark.RouteImpl;
+
+
+public class {{ tableName}}RestApi implements TableRestApi {
+    public RouteImpl get() {
+        return new RouteImpl("{{ routeName}}/:id") {
+            @Override
+            public Object handle(Request request, Response response) {
+                //add application logic to get routes
+                return "Created {{ tableName}}";
+            }
+        };
+    }
+    public RouteImpl post() {
+        return new RouteImpl("/{{ routeName}}s") {
+            @Override
+            public Object handle(Request request, Response response) {
+                //add application logic to get routes
+                return "Added {{ tableName}}";
+            }
+        };
+    }
+    public RouteImpl put() {
+        return new RouteImpl("/{{ routeName}}/:id") {
+            @Override
+            public Object handle(Request request, Response response) {
+                //add application logic to get routes
+                return "Updated {{ tableName}}";
+            }
+        };
+    }
+    public RouteImpl delete() {
+        return new RouteImpl("/{{ routeName}}/:id") {
+            @Override
+            public Object handle(Request request, Response response) {
+                //add application logic to get routes
+                return "Deleted {{ tableName}}";
+            }
+        };
+    }
+}
