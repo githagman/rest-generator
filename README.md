@@ -1,5 +1,8 @@
 #Generate Java Spark Rest Api Routes From Database
 
+Requires Java 8 and Maven install
+
+
 ***
 
 ###1 Install

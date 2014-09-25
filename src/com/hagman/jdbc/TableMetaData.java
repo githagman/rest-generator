@@ -6,7 +6,7 @@ package com.hagman.jdbc;
 public class TableMetaData {
     private String tableName;
     private String routeName;
-    private String interfacePackage;
+    private String packageName;
 
     public void setTableName(String tableName) {
         this.tableName = tableName;
@@ -24,11 +24,11 @@ public class TableMetaData {
         this.routeName = routeName;
     }
 
-    public String getInterfacePackage() {
-        return interfacePackage;
+    public String getPackageName() {
+        return packageName;
     }
 
-    public void setInterfacePackage(String interfacePackage) {
-        this.interfacePackage = interfacePackage;
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
 }

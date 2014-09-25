@@ -7,12 +7,16 @@ import com.hagman.jdbc.DatabaseBroker;
 import com.hagman.jdbc.TableMetaData;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -22,7 +26,9 @@ import java.util.logging.Logger;
  *
  * Output Java Spark-based REST Api Routes based on a mustache-based template for each table in a specified database.
  * Package and run this as a Jar to produce the routes.  See README.md
- * main() method gets run when the jar is run, which highlights the steps
+ * main() method does the work, which highlights the steps.
+ *
+ * Wish list, divide-and-conquer on the file outputs for big speedups, tests...
  */
 
 public class RestGenerator {
@@ -49,7 +55,7 @@ public class RestGenerator {
      * startup loads the properties, initializes the database connection, and checks the outputdirectory is ready
      * @throws IOException
      */
-    public void startup() throws IOException {
+    private void startup() throws IOException {
         try {
             initProperties();
         } catch (IOException e) {
@@ -70,33 +76,45 @@ public class RestGenerator {
             ResultSet metaDataTables = metaData.getTables(properties.getProperty("DatabaseName"), "", "%", null);
             while (metaDataTables.next()) {
                 String tableName = metaDataTables.getString("TABLE_NAME");
-                //remove all underscores for readability
-                String cleanedTableName = tableName.replaceAll("_", "");
-                LOG.info("Adding Table : " + cleanedTableName);
-                TableMetaData metaTable = new TableMetaData();
-                metaTable.setTableName(cleanedTableName);
-                metaTable.setInterfacePackage(properties.getProperty("InterfacePackage"));
-                tables.add(metaTable);
+                addTableMetaData(tableName);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Unable to process Table SQL", e);
         }
     }
 
+    public void addTableMetaData(String tableName) {
+        LOG.info("Adding Table : " + tableName);
+        TableMetaData metaTable = new TableMetaData();
+        metaTable.setTableName(tableName);
+        metaTable.setPackageName(properties.getProperty("InterfacePackage"));
+        tables.add(metaTable);
+    }
 
-    private void generateRestClasses() {
+
+    public void generateRestClasses() {
         for (TableMetaData table : tables) {
             //output java file based on output directory and file name + RestApi.java
-            String tableFilePath = outputDirectory + "/" + table.getTableName() + "RestApi.java";
+            String cleanedTableName = table.getTableName().replaceAll("_", "");
+            String tableFilePath = outputDirectory + "/" + cleanedTableName + "RestApi.java";
             try {
-                MustacheFactory mf = new DefaultMustacheFactory();
-                Mustache mustache = mf.compile(new InputStreamReader(RestGenerator.class.getResourceAsStream("templates/" + properties.getProperty("TemplateFileName"))), "api.template");
-                mustache.execute(new PrintWriter(new FileOutputStream(tableFilePath)), table).flush();
+                String renderedTemplate = getRenderedTemplate(table, properties.getProperty("TemplateFileName"));
+                LOG.log(Level.FINE, renderedTemplate);
+                LOG.info("Writing File : " + cleanedTableName + "RestApi.java");
+                Files.write(Paths.get(tableFilePath), renderedTemplate.getBytes(), StandardOpenOption.CREATE);
             } catch (IOException e) {
                 throw new RuntimeException("Unable to create file : " + tableFilePath, e);
             }
 
         }
+    }
+
+    public String getRenderedTemplate(TableMetaData table, String templateName) throws IOException {
+        MustacheFactory mf = new DefaultMustacheFactory();
+        Mustache mustache = mf.compile(new InputStreamReader(RestGenerator.class.getResourceAsStream("templates/" + templateName)), "api.template");
+        StringWriter writer = new StringWriter();
+        mustache.execute(writer, table).flush();
+        return writer.toString();
     }
 
     /**

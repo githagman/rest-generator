@@ -1,45 +1,45 @@
 
-import {{ packageName}};
+import com.hagman.rest;
 
 import spark.Request;
 import spark.Response;
 import spark.RouteImpl;
 
 
-public class {{ tableName}}RestApi implements TableRestApi {
+public class testRestApi implements TableRestApi {
     public RouteImpl get() {
-        return new RouteImpl("{{ routeName}}/:id") {
+        return new RouteImpl("test/:id") {
             @Override
             public Object handle(Request request, Response response) {
                 //add application logic to get routes
-                return "Created {{ tableName}}";
+                return "Created test";
             }
         };
     }
     public RouteImpl post() {
-        return new RouteImpl("/{{ routeName}}s") {
+        return new RouteImpl("/tests") {
             @Override
             public Object handle(Request request, Response response) {
                 //add application logic to get routes
-                return "Added {{ tableName}}";
+                return "Added test";
             }
         };
     }
     public RouteImpl put() {
-        return new RouteImpl("/{{ routeName}}/:id") {
+        return new RouteImpl("/test/:id") {
             @Override
             public Object handle(Request request, Response response) {
                 //add application logic to get routes
-                return "Updated {{ tableName}}";
+                return "Updated test";
             }
         };
     }
     public RouteImpl delete() {
-        return new RouteImpl("/{{ routeName}}/:id") {
+        return new RouteImpl("/test/:id") {
             @Override
             public Object handle(Request request, Response response) {
                 //add application logic to get routes
-                return "Deleted {{ tableName}}";
+                return "Deleted test";
             }
         };
     }
