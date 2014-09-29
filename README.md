@@ -31,7 +31,7 @@ mvn package
 ###4 Run
 
 ```
-java -jar package/rest-generator-1.0-snapshot.jar
+java -jar package/rest-generator-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
 
 ###5 Test
